@@ -65,7 +65,7 @@ TARGET_LINK_LIBRARIES(ystats
     /yuneta/development/output/lib/libunwind.a
     /yuneta/development/output/lib/libpcre2-8.a
 
-    pthread     # used by libuv
+    pthread dl  # used by libuv
     lzma        # used by libunwind
 
 )
@@ -79,7 +79,7 @@ TARGET_LINK_LIBRARIES(ystats
     /yuneta/development/output/lib/libunwind.a
     /yuneta/development/output/lib/libpcre2-8.a
 
-    pthread     # used by libuv
+    pthread dl  # used by libuv
     lzma        # used by libunwind
 
 )
