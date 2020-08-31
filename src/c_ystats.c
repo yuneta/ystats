@@ -92,7 +92,7 @@ PRIVATE void mt_create(hgobj gobj)
 {
     PRIVATE_DATA *priv = gobj_priv_data(gobj);
 
-    priv->timer = gobj_create("ystats", GCLASS_TIMER, 0, gobj);
+    priv->timer = gobj_create("", GCLASS_TIMER, 0, gobj);
 
     /*
      *  Do copy of heavy used parameters, for quick access.
