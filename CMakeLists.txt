@@ -66,7 +66,7 @@ TARGET_LINK_LIBRARIES(ystats
 
     pthread dl  # used by libuv
     lzma        # used by libunwind
-
+    uuid
 )
 
 ##############################################
