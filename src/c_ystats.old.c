@@ -42,10 +42,9 @@ SDATA (ASN_OCTET_STR,   "attribute",        0,          "",             "Request
 SDATA (ASN_INTEGER,     "refresh_time",     0,          1,              "Refresh time, in seconds. Set 0 to remove subscription."),
 SDATA (ASN_OCTET_STR,   "url",              0,          "ws://127.0.0.1:1991",  "Url to get Statistics. Can be a ip/hostname or a full url"),
 SDATA (ASN_OCTET_STR,   "realm_name",       0,          0,              "Realm name"),
-SDATA (ASN_OCTET_STR,   "yuno_name",        0,          0,              "Yuno name"),
-SDATA (ASN_OCTET_STR,   "yuno_role",        0,          0,              "Yuno role"),
+SDATA (ASN_OCTET_STR,   "yuno_name",        0,          "",             "Yuno name"),
+SDATA (ASN_OCTET_STR,   "yuno_role",        0,          "yuneta_agent", "Yuno role"),
 SDATA (ASN_OCTET_STR,   "yuno_service",     0,          "__default_service__", "Yuno service"),
-
 SDATA (ASN_POINTER,     "gobj_connector",   0,          0,              "connection gobj"),
 SDATA (ASN_POINTER,     "user_data",        0,          0,              "user data"),
 SDATA (ASN_POINTER,     "user_data2",       0,          0,              "more user data"),
@@ -254,14 +253,9 @@ PRIVATE char agent_secure_config[]= "\
 PRIVATE int cmd_connect(hgobj gobj)
 {
     const char *url = gobj_read_str_attr(gobj, "url");
-    char _url[128];
-    if(!strchr(url, ':')) {
-        snprintf(_url, sizeof(_url), "ws://%s:1991", url); // TODO saca el puerto 1991 a configuración
-        url = _url;
-    }
-    const char *yuno_name = ""; // No direct connection, all through agent. gobj_read_str_attr(gobj, "yuno_name");
-    const char *yuno_role = "yuneta_agent"; // No direct connection, all through agent. gobj_read_str_attr(gobj, "yuno_role");
-    const char *yuno_service = "__default_service__"; //gobj_read_str_attr(gobj, "yuno_service");
+    const char *yuno_name = gobj_read_str_attr(gobj, "yuno_name");
+    const char *yuno_role = gobj_read_str_attr(gobj, "yuno_role");
+    const char *yuno_service = gobj_read_str_attr(gobj, "yuno_service");
 
     /*
      *  Each display window has a gobj to send the commands (saved in user_data).
