@@ -7,8 +7,7 @@
  *          Copyright (c) 2016 Niyamaka.
  *          All Rights Reserved.
  ****************************************************************************/
-#ifndef _C_YSTATS_H
-#define _C_YSTATS_H 1
+#pragma once
 
 #include <yuneta.h>
 
@@ -39,6 +38,4 @@ PUBLIC GCLASS *gclass_ystats(void);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
