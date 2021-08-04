@@ -320,6 +320,9 @@ int main(int argc, char *argv[])
     arguments.yuno_role = 0;
     arguments.yuno_name = 0;
     arguments.yuno_service = "__default_service__";
+    arguments.token_endpoint = "";
+    arguments.user_id = "";
+    arguments.jwt = "";
 
     /*
      *  Save args
@@ -356,7 +359,7 @@ int main(int argc, char *argv[])
         snprintf(param2, l, "--config-file=%s", arguments.config_json_file);
         argvs[idx++] = param2;
     } else {
-        json_t *kw_utility = json_pack("{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s}}",
+        json_t *kw_utility = json_pack("{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s}}",
             "global",
             "YStats.refresh_time", arguments.refresh_time,
             "YStats.verbose", arguments.verbose,
