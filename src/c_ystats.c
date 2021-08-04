@@ -40,6 +40,7 @@ SDATA (ASN_OCTET_STR,   "stats",            0,          "",             "Request
 SDATA (ASN_OCTET_STR,   "gobj_name",        0,          "",             "Gobj's attribute."),
 SDATA (ASN_OCTET_STR,   "attribute",        0,          "",             "Requested attribute."),
 SDATA (ASN_INTEGER,     "refresh_time",     0,          1,              "Refresh time, in seconds. Set 0 to remove subscription."),
+SDATA (ASN_OCTET_STR,   "jwt",              0,          "",             "Jwt"),
 SDATA (ASN_OCTET_STR,   "url",              0,          "ws://127.0.0.1:1991",  "Url to get Statistics. Can be a ip/hostname or a full url"),
 SDATA (ASN_OCTET_STR,   "realm_name",       0,          0,              "Realm name"),
 SDATA (ASN_OCTET_STR,   "yuno_name",        0,          0,              "Yuno name"),
@@ -207,6 +208,7 @@ PRIVATE char agent_secure_config[]= "\
     'gclass': 'IEvent_cli',                     \n\
     'as_unique': true,                          \n\
     'kw': {                                     \n\
+        'jwt': '(^^__jwt__^^)',                         \n\
         'remote_yuno_name': '(^^__yuno_name__^^)',      \n\
         'remote_yuno_role': '(^^__yuno_role__^^)',      \n\
         'remote_yuno_service': '(^^__yuno_service__^^)' \n\
@@ -253,6 +255,7 @@ PRIVATE char agent_secure_config[]= "\
 
 PRIVATE int cmd_connect(hgobj gobj)
 {
+    const char *jwt = gobj_read_str_attr(gobj, "jwt");
     const char *url = gobj_read_str_attr(gobj, "url");
     char _url[128];
     if(!strchr(url, ':')) {
@@ -267,8 +270,9 @@ PRIVATE int cmd_connect(hgobj gobj)
      *  Each display window has a gobj to send the commands (saved in user_data).
      *  For external agents create a filter-chain of gobjs
      */
-    json_t * jn_config_variables = json_pack("{s:{s:s, s:s, s:s, s:s}}",
+    json_t * jn_config_variables = json_pack("{s:{s:s, s:s, s:s, s:s, s:s}}",
         "__json_config_variables__",
+            "__jwt__", jwt,
             "__url__", url,
             "__yuno_name__", yuno_name,
             "__yuno_role__", yuno_role,
