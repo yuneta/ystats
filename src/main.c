@@ -137,32 +137,33 @@ static char args_doc[] = "";
  */
 static struct argp_option options[] = {
 /*-name-------------key-----arg---------flags---doc-----------------group */
-{0,                 0,      0,          0,      "Remote Service keys", 1},
-{"refresh_time",    't',    "NUMBER",   0,      "Refresh time, in seconds (default 1).", 1},
-{"stats",           's',    "STATS",    0,      "Statistic to ask.", 1},
-{"attribute",       'a',    "ATTRIBUTE",0,      "Attribute to ask .", 1},
-{"gobj_name",       'g',    "GOBJNAME", 0,      "Attribute's GObj (named-gobj or full-path).", 1},
+{0,                 0,      0,          0,      "Remote Service keys", 10},
+{"refresh_time",    't',    "NUMBER",   0,      "Refresh time, in seconds (default 1).", 10},
+{"stats",           's',    "STATS",    0,      "Statistic to ask.", 10},
+{"attribute",       'a',    "ATTRIBUTE",0,      "Attribute to ask .", 10},
+{"gobj_name",       'g',    "GOBJNAME", 0,      "Attribute's GObj (named-gobj or full-path).", 10},
 
-{0,                 0,      0,          0,      "OAuth2 keys", 2},
-{"token_endpoint",  'e',    "ENDPOINT", 0,      "OAuth2 Token EndPoint", 2},
-{"user_id",         'x',    "USER_ID",  0,      "OAuth2 User Id", 2},
+{0,                 0,      0,          0,      "OAuth2 keys", 20},
+{"token_endpoint",  'e',    "ENDPOINT", 0,      "OAuth2 Token EndPoint (get now a jwt)", 20},
+{"user_id",         'x',    "USER_ID",  0,      "OAuth2 User Id (get now a jwt)", 20},
+{"jwt",             'j',    "JWT",      0,      "Jwt (previously got it)", 21},
 
-{0,                 0,      0,          0,      "Connection keys", 3},
-{"url",             'u',    "URL",      0,      "Agent url to connect (default 'ws://127.0.0.1:1991').", 3},
+{0,                 0,      0,          0,      "Connection keys", 30},
+{"url",             'u',    "URL",      0,      "Agent url to connect (default 'ws://127.0.0.1:1991').", 30},
 
-{0,                 0,      0,          0,      "Stats keys", 4},
-{"realm_name",      'n',    "REALNAME", 0,      "Realm name.", 4},
-{"yuno_role",       'O',    "YUNOROLE", 0,      "Yuno role.", 4},
-{"yuno_name",       'o',    "YUNONAME", 0,      "Yuno name.", 4},
-{"service",         'S',    "SERVICE",  0,      "Yuno service (default '__default_service__').", 4},
+{0,                 0,      0,          0,      "Stats keys", 40},
+{"realm_name",      'n',    "REALNAME", 0,      "Realm name.", 40},
+{"yuno_role",       'O',    "YUNOROLE", 0,      "Yuno role.", 40},
+{"yuno_name",       'o',    "YUNONAME", 0,      "Yuno name.", 40},
+{"service",         'S',    "SERVICE",  0,      "Yuno service (default '__default_service__').", 40},
 
-{0,                 0,      0,          0,      "Local keys.", 5},
-{"print",           'p',    0,          0,      "Print configuration.", 5},
-{"config-file",     'f',    "FILE",     0,      "load settings from json config file or [files]", 5},
-{"print-role",      'r',    0,          0,      "print the basic yuno's information", 5},
-{"verbose",         'l',    "LEVEL",    0,      "Verbose level.", 5},
-{"version",         'v',    0,          0,      "Print program version.", 5},
-{"yuneta-version",  'V',    0,          0,      "Print yuneta version", 5},
+{0,                 0,      0,          0,      "Local keys.", 50},
+{"print",           'p',    0,          0,      "Print configuration.", 50},
+{"config-file",     'f',    "FILE",     0,      "load settings from json config file or [files]", 50},
+{"print-role",      'r',    0,          0,      "print the basic yuno's information", 50},
+{"verbose",         'l',    "LEVEL",    0,      "Verbose level.", 50},
+{"version",         'v',    0,          0,      "Print program version.", 50},
+{"yuneta-version",  'V',    0,          0,      "Print yuneta version", 50},
 {0}
 };
 
@@ -186,6 +187,11 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
     struct arguments *arguments = state->input;
 
     switch (key) {
+    case 'e':
+        break;
+    case 'x':
+        break;
+
     case 't':
         if(arg) {
             arguments->refresh_time = atoi(arg);
