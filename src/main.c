@@ -36,6 +36,10 @@ struct arguments
     char *yuno_service;
     char *gobj_name;
 
+    char *token_endpoint;
+    char *user_id;
+    char *jwt;
+
     int verbose;                /* verbose */
     int print;
     int print_version;
@@ -188,8 +192,13 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 
     switch (key) {
     case 'e':
+        arguments->token_endpoint = arg;
         break;
     case 'x':
+        arguments->user_id = arg;
+        break;
+    case 'j':
+        arguments->jwt = arg;
         break;
 
     case 't':
