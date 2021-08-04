@@ -78,12 +78,12 @@ PRIVATE char fixed_config[]= "\
 PRIVATE char variable_config[]= "\
 {                                                                   \n\
     'environment': {                                                \n\
-        'use_system_memory': true,                                 \n\
+        'use_system_memory': true,                                  \n\
         'log_gbmem_info': true,                                     \n\
-        'MEM_MIN_BLOCK': 32,                                        \n\
-        'MEM_MAX_BLOCK': 65536,             #^^ 64*K                \n\
-        'MEM_SUPERBLOCK': 131072,           #^^ 128*K               \n\
-        'MEM_MAX_SYSTEM_MEMORY': 1048576,   #^^ 1*M                 \n\
+        'MEM_MIN_BLOCK': 512,                                       \n\
+        'MEM_MAX_BLOCK': 52428800,              #^^  50*M           \n\
+        'MEM_SUPERBLOCK': 52428800,             #^^  50*M           \n\
+        'MEM_MAX_SYSTEM_MEMORY': 2147483648,     #^^ 2*G            \n\
         'console_log_handlers': {                                   \n\
             'to_stdout': {                                          \n\
                 'handler_type': 'stdout',                           \n\
@@ -142,17 +142,24 @@ static struct argp_option options[] = {
 {"stats",           's',    "STATS",    0,      "Statistic to ask.", 1},
 {"attribute",       'a',    "ATTRIBUTE",0,      "Attribute to ask .", 1},
 {"gobj_name",       'g',    "GOBJNAME", 0,      "Attribute's GObj (named-gobj or full-path).", 1},
-{0,                 0,      0,          0,      "Connection keys", 2},
-{"url",             'u',    "URL",      0,      "Agent url to connect (default 'ws://127.0.0.1:1991').", 2},
+
+{0,                 0,      0,          0,      "OAuth2 keys", 2},
+{"token_endpoint",  'e',    "ENDPOINT", 0,      "OAuth2 Token EndPoint", 2},
+{"user_id",         'x',    "USER_ID",  0,      "OAuth2 User Id", 2},
+
+{0,                 0,      0,          0,      "Connection keys", 3},
+{"url",             'u',    "URL",      0,      "Agent url to connect (default 'ws://127.0.0.1:1991').", 3},
+
 {0,                 0,      0,          0,      "Stats keys", 4},
 {"realm_name",      'n',    "REALNAME", 0,      "Realm name.", 4},
 {"yuno_role",       'O',    "YUNOROLE", 0,      "Yuno role.", 4},
 {"yuno_name",       'o',    "YUNONAME", 0,      "Yuno name.", 4},
 {"service",         'S',    "SERVICE",  0,      "Yuno service (default '__default_service__').", 4},
+
 {0,                 0,      0,          0,      "Local keys.", 5},
 {"print",           'p',    0,          0,      "Print configuration.", 5},
 {"config-file",     'f',    "FILE",     0,      "load settings from json config file or [files]", 5},
-{"print-role",      'r',    0,          0,      "print the basic yuno's information"},
+{"print-role",      'r',    0,          0,      "print the basic yuno's information", 5},
 {"verbose",         'l',    "LEVEL",    0,      "Verbose level.", 5},
 {"version",         'v',    0,          0,      "Print program version.", 5},
 {"yuneta-version",  'V',    0,          0,      "Print yuneta version", 5},
