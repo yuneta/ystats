@@ -363,6 +363,9 @@ int main(int argc, char *argv[])
             "YStats.stats", arguments.stats,
             "YStats.gobj_name", arguments.gobj_name,
             "YStats.attribute", arguments.attribute,
+            "YStats.token_endpoint", arguments.token_endpoint,
+            "YStats.user_id", arguments.user_id,
+            "YStats.jwt", arguments.jwt,
             "YStats.url", arguments.url,
             "YStats.yuno_service", arguments.yuno_service
         );

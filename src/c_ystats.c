@@ -40,6 +40,8 @@ SDATA (ASN_OCTET_STR,   "stats",            0,          "",             "Request
 SDATA (ASN_OCTET_STR,   "gobj_name",        0,          "",             "Gobj's attribute."),
 SDATA (ASN_OCTET_STR,   "attribute",        0,          "",             "Requested attribute."),
 SDATA (ASN_INTEGER,     "refresh_time",     0,          1,              "Refresh time, in seconds. Set 0 to remove subscription."),
+SDATA (ASN_OCTET_STR,   "token_endpoint",   0,          "",             "OAuth2 Token EndPoint (get now a jwt)"),
+SDATA (ASN_OCTET_STR,   "user_id",          0,          "",             "OAuth2 User Id (get now a jwt)"),
 SDATA (ASN_OCTET_STR,   "jwt",              0,          "",             "Jwt"),
 SDATA (ASN_OCTET_STR,   "url",              0,          "ws://127.0.0.1:1991",  "Url to get Statistics. Can be a ip/hostname or a full url"),
 SDATA (ASN_OCTET_STR,   "realm_name",       0,          0,              "Realm name"),
