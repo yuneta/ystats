@@ -60,7 +60,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state);
 #define APP_NAME        "ystats"
 #define APP_DOC         "Yuneta Statistics"
 
-#define APP_VERSION     "4.15.8"
+#define APP_VERSION     "4.15.9"
 #define APP_DATETIME    __DATE__ " " __TIME__
 #define APP_SUPPORT     "<niyamaka at yuneta.io>"
 
@@ -155,13 +155,11 @@ static struct argp_option options[] = {
 {"jwt",             'j',    "JWT",      0,      "Jwt (previously got it)", 21},
 
 {0,                 0,      0,          0,      "Connection keys", 30},
-{"url",             'u',    "URL",      0,      "Agent url to connect (default 'ws://127.0.0.1:1991').", 30},
-
-{0,                 0,      0,          0,      "Stats keys", 40},
-{"realm_name",      'n',    "REALNAME", 0,      "Realm name.", 40},
-{"yuno_role",       'O',    "YUNOROLE", 0,      "Yuno role.", 40},
-{"yuno_name",       'o',    "YUNONAME", 0,      "Yuno name.", 40},
-{"service",         'S',    "SERVICE",  0,      "Yuno service (default '__default_service__').", 40},
+{"url",             'u',    "URL",      0,      "Url to connect. Default: 'ws://127.0.0.1:1991'.", 30},
+{"realm_name",      'Z',    "REALM",    0,      "Remote realm name (used for Authorized Party, 'azp' field of jwt). ", 30},
+{"yuno_role",       'O',    "ROLE",     0,      "Remote yuno role. Default: ''", 30},
+{"yuno_name",       'o',    "NAME",     0,      "Remote yuno name. Default: ''", 30},
+{"yuno_service",    'S',    "SERVICE",  0,      "Remote yuno service. Default: '__default_service__'", 30},
 
 {0,                 0,      0,          0,      "Local keys.", 50},
 {"print",           'p',    0,          0,      "Print configuration.", 50},
@@ -223,15 +221,16 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
         arguments->yuno_name = arg;
         break;
 
+    case 'Z':
+        arguments->realm_name = arg;
+        break;
     case 'S':
         arguments->yuno_service = arg;
         break;
     case 's':
         arguments->stats = arg;
         break;
-    case 'n':
-        arguments->realm_name = arg;
-        break;
+
     case 'a':
         arguments->attribute = arg;
         break;
@@ -321,7 +320,7 @@ int main(int argc, char *argv[])
     arguments.stats = "";
     arguments.gobj_name = "";
     arguments.attribute = "";
-    arguments.realm_name = 0;
+    arguments.realm_name = "";
     arguments.yuno_role = 0;
     arguments.yuno_name = 0;
     arguments.yuno_service = "__default_service__";
@@ -365,13 +364,15 @@ int main(int argc, char *argv[])
         snprintf(param2, l, "--config-file=%s", arguments.config_json_file);
         argvs[idx++] = param2;
     } else {
-        json_t *kw_utility = json_pack("{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s}}",
+        json_t *kw_utility = json_pack(
+            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s}}",
             "global",
             "YStats.refresh_time", arguments.refresh_time,
             "YStats.verbose", arguments.verbose,
             "YStats.stats", arguments.stats,
             "YStats.gobj_name", arguments.gobj_name,
             "YStats.attribute", arguments.attribute,
+            "YStats.realm_name", arguments.realm_name,
             "YStats.token_endpoint", arguments.token_endpoint,
             "YStats.user_id", arguments.user_id,
             "YStats.user_passw", arguments.user_passw,
@@ -380,9 +381,6 @@ int main(int argc, char *argv[])
             "YStats.yuno_service", arguments.yuno_service
         );
         json_t *jn_ystats = kw_get_dict_value(kw_utility, "global", 0, 0);
-        if(arguments.realm_name) {
-            json_object_set_new(jn_ystats, "YStats.realm_name", json_string(arguments.realm_name));
-        }
         if(arguments.yuno_role) {
             json_object_set_new(jn_ystats, "YStats.yuno_role", json_string(arguments.yuno_role));
         }
