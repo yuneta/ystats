@@ -41,15 +41,17 @@ SDATA (ASN_OCTET_STR,   "stats",            0,          "",             "Request
 SDATA (ASN_OCTET_STR,   "gobj_name",        0,          "",             "Gobj's attribute."),
 SDATA (ASN_OCTET_STR,   "attribute",        0,          "",             "Requested attribute."),
 SDATA (ASN_INTEGER,     "refresh_time",     0,          1,              "Refresh time, in seconds. Set 0 to remove subscription."),
-SDATA (ASN_OCTET_STR,   "token_endpoint",   0,          "",             "OAuth2 Token EndPoint (interactive jwt)"),
+SDATA (ASN_OCTET_STR,   "auth_system",      0,          "",             "OAuth2 System (interactive jwt)"),
+SDATA (ASN_OCTET_STR,   "auth_url",         0,          "",             "OAuth2 Server Url (interactive jwt)"),
+SDATA (ASN_OCTET_STR,   "auth_owner",       0,          "",             "OAuth2 Owner (interactive jwt)"),
 SDATA (ASN_OCTET_STR,   "user_id",          0,          "",             "OAuth2 User Id (interactive jwt)"),
 SDATA (ASN_OCTET_STR,   "user_passw",       0,          "",             "OAuth2 User password (interactive jwt)"),
 SDATA (ASN_OCTET_STR,   "client_id",        0,          "",             "OAuth2 client id (azp - authorized party ) (interactive jwt)"),
 SDATA (ASN_OCTET_STR,   "jwt",              0,          "",             "Jwt"),
 SDATA (ASN_OCTET_STR,   "url",              0,          "ws://127.0.0.1:1991",  "Url to get Statistics. Can be a ip/hostname or a full url"),
 SDATA (ASN_OCTET_STR,   "realm_name",       0,          "",             "Realm name (used for Authorized Party, 'azp' field of jwt)"),
-SDATA (ASN_OCTET_STR,   "yuno_name",        0,          0,              "Yuno name"),
-SDATA (ASN_OCTET_STR,   "yuno_role",        0,          0,              "Yuno role"),
+SDATA (ASN_OCTET_STR,   "yuno_name",        0,          "",             "Yuno name"),
+SDATA (ASN_OCTET_STR,   "yuno_role",        0,          "yuneta_agent", "Yuno role (No direct connection, all through agent)"),
 SDATA (ASN_OCTET_STR,   "yuno_service",     0,          "__default_service__", "Yuno service"),
 
 SDATA (ASN_POINTER,     "gobj_connector",   0,          0,              "connection gobj"),
@@ -137,9 +139,9 @@ PRIVATE int mt_start(hgobj gobj)
     PRIVATE_DATA *priv = gobj_priv_data(gobj);
 
     gobj_start(priv->timer);
-    const char *token_endpoint = gobj_read_str_attr(gobj, "token_endpoint");
+    const char *auth_url = gobj_read_str_attr(gobj, "auth_url");
     const char *user_id = gobj_read_str_attr(gobj, "user_id");
-    if(!empty_string(token_endpoint) && !empty_string(user_id)) {
+    if(!empty_string(auth_url) && !empty_string(user_id)) {
         /*
          *  HACK if there are user_id and endpoint
          *  then try to authenticate
@@ -181,8 +183,10 @@ PRIVATE int do_authenticate_task(hgobj gobj)
     /*-----------------------------*
      *      Create the task
      *-----------------------------*/
-    json_t *kw = json_pack("{s:s, s:s, s:s, s:s}",
-        "token_endpoint", gobj_read_str_attr(gobj, "token_endpoint"), // contains the owner
+    json_t *kw = json_pack("{s:s, s:s, s:s, s:s, s:s, s:s}",
+        "auth_system", gobj_read_str_attr(gobj, "auth_system"),
+        "auth_url", gobj_read_str_attr(gobj, "auth_url"),
+        "auth_owner", gobj_read_str_attr(gobj, "auth_owner"),
         "user_id", gobj_read_str_attr(gobj, "user_id"),
         "user_passw", gobj_read_str_attr(gobj, "user_passw"),
         "azp", gobj_read_str_attr(gobj, "realm_name")   // Our realm is the Authorized Party in jwt
@@ -302,14 +306,9 @@ PRIVATE int cmd_connect(hgobj gobj)
 {
     const char *jwt = gobj_read_str_attr(gobj, "jwt");
     const char *url = gobj_read_str_attr(gobj, "url");
-    char _url[128];
-    if(!strchr(url, ':')) {
-        snprintf(_url, sizeof(_url), "ws://%s:1991", url); // TODO saca el puerto 1991 a configuración
-        url = _url;
-    }
-    const char *yuno_name = ""; // No direct connection, all through agent. gobj_read_str_attr(gobj, "yuno_name");
-    const char *yuno_role = "yuneta_agent"; // No direct connection, all through agent. gobj_read_str_attr(gobj, "yuno_role");
-    const char *yuno_service = "__default_service__"; //gobj_read_str_attr(gobj, "yuno_service");
+    const char *yuno_name = gobj_read_str_attr(gobj, "yuno_name");
+    const char *yuno_role = gobj_read_str_attr(gobj, "yuno_role");
+    const char *yuno_service = gobj_read_str_attr(gobj, "yuno_service");
 
     /*
      *  Each display window has a gobj to send the commands (saved in user_data).
