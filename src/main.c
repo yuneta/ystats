@@ -31,7 +31,7 @@ struct arguments
     char *stats;
     char *attribute;
     char *auth_owner;
-    char *realm_name;
+    char *realm_role;
     char *yuno_role;
     char *yuno_name;
     char *yuno_service;
@@ -160,7 +160,7 @@ static struct argp_option options[] = {
 
 {0,                 0,      0,          0,      "Connection keys", 30},
 {"url",             'u',    "URL",      0,      "Url to connect. Default: 'ws://127.0.0.1:1991'.", 30},
-{"realm_name",      'Z',    "REALM",    0,      "Remote realm name (used for Authorized Party, 'azp' field of jwt). ", 30},
+{"realm_role",      'Z',    "REALM",    0,      "Realm role (used for Authorized Party, 'azp' field of jwt, client_id in keycloak)", 30},
 {"yuno_role",       'O',    "ROLE",     0,      "Remote yuno role. Default: ''", 30},
 {"yuno_name",       'o',    "NAME",     0,      "Remote yuno name. Default: ''", 30},
 {"yuno_service",    'S',    "SERVICE",  0,      "Remote yuno service. Default: '__default_service__'", 30},
@@ -233,7 +233,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
         break;
 
     case 'Z':
-        arguments->realm_name = arg;
+        arguments->realm_role = arg;
         break;
     case 'S':
         arguments->yuno_service = arg;
@@ -331,7 +331,7 @@ int main(int argc, char *argv[])
     arguments.stats = "";
     arguments.gobj_name = "";
     arguments.attribute = "";
-    arguments.realm_name = "";
+    arguments.realm_role = "";
     arguments.yuno_role = 0;
     arguments.yuno_name = 0;
     arguments.yuno_service = "__default_service__";
@@ -385,7 +385,7 @@ int main(int argc, char *argv[])
             "YStats.stats", arguments.stats,
             "YStats.gobj_name", arguments.gobj_name,
             "YStats.attribute", arguments.attribute,
-            "YStats.realm_name", arguments.realm_name,
+            "YStats.realm_role", arguments.realm_role,
             "YStats.auth_system", arguments.auth_system,
             "YStats.auth_url", arguments.auth_url,
             "YStats.auth_owner", arguments.auth_owner,

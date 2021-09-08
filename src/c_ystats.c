@@ -49,7 +49,7 @@ SDATA (ASN_OCTET_STR,   "user_passw",       0,          "",             "OAuth2 
 SDATA (ASN_OCTET_STR,   "client_id",        0,          "",             "OAuth2 client id (azp - authorized party ) (interactive jwt)"),
 SDATA (ASN_OCTET_STR,   "jwt",              0,          "",             "Jwt"),
 SDATA (ASN_OCTET_STR,   "url",              0,          "ws://127.0.0.1:1991",  "Url to get Statistics. Can be a ip/hostname or a full url"),
-SDATA (ASN_OCTET_STR,   "realm_name",       0,          "",             "Realm name (used for Authorized Party, 'azp' field of jwt)"),
+SDATA (ASN_OCTET_STR,   "realm_role",       0,          "",             "Realm role (used for Authorized Party, 'azp' field of jwt, client_id in keycloak)"),
 SDATA (ASN_OCTET_STR,   "yuno_name",        0,          "",             "Yuno name"),
 SDATA (ASN_OCTET_STR,   "yuno_role",        0,          "yuneta_agent", "Yuno role (No direct connection, all through agent)"),
 SDATA (ASN_OCTET_STR,   "yuno_service",     0,          "__default_service__", "Yuno service"),
@@ -189,7 +189,7 @@ PRIVATE int do_authenticate_task(hgobj gobj)
         "auth_owner", gobj_read_str_attr(gobj, "auth_owner"),
         "user_id", gobj_read_str_attr(gobj, "user_id"),
         "user_passw", gobj_read_str_attr(gobj, "user_passw"),
-        "azp", gobj_read_str_attr(gobj, "realm_name")   // Our realm is the Authorized Party in jwt
+        "azp", gobj_read_str_attr(gobj, "realm_role")   // Our realm is the Authorized Party in jwt
     );
 
     hgobj gobj_task = gobj_create_unique("task-authenticate", GCLASS_TASK_AUTHENTICATE, kw, gobj);
@@ -361,7 +361,7 @@ PRIVATE int poll_attr_data(hgobj gobj)
     PRIVATE_DATA *priv = gobj_priv_data(gobj);
 
     GBUFFER *gbuf = gbuf_create(8*1024, 8*1024, 0, 0);
-    const char *realm_name = gobj_read_str_attr(gobj, "realm_name");
+    const char *realm_role = gobj_read_str_attr(gobj, "realm_role");
     const char *yuno_name = gobj_read_str_attr(gobj, "yuno_name");
     const char *yuno_role = gobj_read_str_attr(gobj, "yuno_role");
     const char *yuno_service = gobj_read_str_attr(gobj, "yuno_service");
@@ -372,8 +372,8 @@ PRIVATE int poll_attr_data(hgobj gobj)
     if(yuno_service) {
         gbuf_printf(gbuf, " service=%s", yuno_service);
     }
-    if(realm_name) {
-        gbuf_printf(gbuf, " realm_name=%s", realm_name);
+    if(realm_role) {
+        gbuf_printf(gbuf, " realm_role=%s", realm_role);
     }
     if(yuno_role) {
         gbuf_printf(gbuf, " yuno_role=%s", yuno_role);
@@ -398,7 +398,7 @@ PRIVATE int poll_stats_data(hgobj gobj)
     PRIVATE_DATA *priv = gobj_priv_data(gobj);
 
     GBUFFER *gbuf = gbuf_create(8*1024, 8*1024, 0, 0);
-    const char *realm_name = gobj_read_str_attr(gobj, "realm_name");
+    const char *realm_role = gobj_read_str_attr(gobj, "realm_role");
     const char *yuno_name = gobj_read_str_attr(gobj, "yuno_name");
     const char *yuno_role = gobj_read_str_attr(gobj, "yuno_role");
     const char *yuno_service = gobj_read_str_attr(gobj, "yuno_service");
@@ -420,8 +420,8 @@ PRIVATE int poll_stats_data(hgobj gobj)
     }
 
 
-    if(realm_name) {
-        gbuf_printf(gbuf, " realm_name=%s", realm_name);
+    if(realm_role) {
+        gbuf_printf(gbuf, " realm_role=%s", realm_role);
     }
     if(yuno_role) {
         gbuf_printf(gbuf, " yuno_role=%s", yuno_role);
