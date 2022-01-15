@@ -50,7 +50,7 @@ SDATA (ASN_OCTET_STR,   "jwt",              0,          "",             "Jwt"),
 SDATA (ASN_OCTET_STR,   "url",              0,          "ws://127.0.0.1:1991",  "Url to get Statistics. Can be a ip/hostname or a full url"),
 SDATA (ASN_OCTET_STR,   "realm_role",       0,          "",             "Realm role (used for Authorized Party, 'azp' field of jwt, client_id in keycloak)"),
 SDATA (ASN_OCTET_STR,   "yuno_name",        0,          "",             "Yuno name"),
-SDATA (ASN_OCTET_STR,   "yuno_role",        0,          "yuneta_agent", "Yuno role (No direct connection, all through agent)"),
+SDATA (ASN_OCTET_STR,   "yuno_role",        0,          "",             "Yuno role (No direct connection, all through agent)"),
 SDATA (ASN_OCTET_STR,   "yuno_service",     0,          "__default_service__", "Yuno service"),
 
 SDATA (ASN_POINTER,     "gobj_connector",   0,          0,              "connection gobj"),
@@ -305,9 +305,6 @@ PRIVATE int cmd_connect(hgobj gobj)
 {
     const char *jwt = gobj_read_str_attr(gobj, "jwt");
     const char *url = gobj_read_str_attr(gobj, "url");
-    const char *yuno_name = gobj_read_str_attr(gobj, "yuno_name");
-    const char *yuno_role = gobj_read_str_attr(gobj, "yuno_role");
-    const char *yuno_service = gobj_read_str_attr(gobj, "yuno_service");
 
     /*
      *  Each display window has a gobj to send the commands (saved in user_data).
@@ -317,9 +314,9 @@ PRIVATE int cmd_connect(hgobj gobj)
         "__json_config_variables__",
             "__jwt__", jwt,
             "__url__", url,
-            "__yuno_name__", yuno_name,
-            "__yuno_role__", yuno_role,
-            "__yuno_service__", yuno_service
+            "__yuno_name__", "",
+            "__yuno_role__", "yuneta_agent",
+            "__yuno_service__", "__default_service__"
     );
     char *sjson_config_variables = json2str(jn_config_variables);
     JSON_DECREF(jn_config_variables);
@@ -418,14 +415,13 @@ PRIVATE int poll_stats_data(hgobj gobj)
         }
     }
 
-
-    if(realm_role) {
+    if(!empty_string(realm_role)) {
         gbuf_printf(gbuf, " realm_role=%s", realm_role);
     }
-    if(yuno_role) {
+    if(!empty_string(yuno_role)) {
         gbuf_printf(gbuf, " yuno_role=%s", yuno_role);
     }
-    if(yuno_name) {
+    if(!empty_string(yuno_name)) {
         gbuf_printf(gbuf, " yuno_name=%s", yuno_name);
     }
     gbuf_printf(gbuf, " stats=%s", stats?stats:"");
