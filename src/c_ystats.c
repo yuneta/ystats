@@ -25,6 +25,7 @@
 PRIVATE int do_authenticate_task(hgobj gobj);
 PRIVATE int cmd_connect(hgobj gobj);
 PRIVATE int poll_attr_data(hgobj gobj);
+PRIVATE int poll_command_data(hgobj gobj);
 PRIVATE int poll_stats_data(hgobj gobj);
 
 /***************************************************************************
@@ -38,8 +39,9 @@ PRIVATE sdata_desc_t tattr_desc[] = {
 /*-ATTR-type------------name----------------flag--------default---------description---------- */
 SDATA (ASN_BOOLEAN,     "verbose",          0,          1,              "Verbose mode."),
 SDATA (ASN_OCTET_STR,   "stats",            0,          "",             "Requested statistics."),
-SDATA (ASN_OCTET_STR,   "gobj_name",        0,          "",             "Gobj's attribute."),
+SDATA (ASN_OCTET_STR,   "gobj_name",        0,          "",             "Gobj's attribute or command."),
 SDATA (ASN_OCTET_STR,   "attribute",        0,          "",             "Requested attribute."),
+SDATA (ASN_OCTET_STR,   "command",          0,          "",             "Requested command."),
 SDATA (ASN_INTEGER,     "refresh_time",     0,          1,              "Refresh time, in seconds. Set 0 to remove subscription."),
 SDATA (ASN_OCTET_STR,   "auth_system",      0,          "",             "OAuth2 System (interactive jwt)"),
 SDATA (ASN_OCTET_STR,   "auth_url",         0,          "",             "OAuth2 Server Url (interactive jwt)"),
@@ -348,7 +350,6 @@ PRIVATE int cmd_connect(hgobj gobj)
     return 0;
 }
 
-
 /***************************************************************************
  *
  ***************************************************************************/
@@ -381,6 +382,22 @@ PRIVATE int poll_attr_data(hgobj gobj)
     gbuf_printf(gbuf, " gobj_name='%s'", gobj_name_?gobj_name_:"");
     gbuf_printf(gbuf, " attribute=%s", attribute?attribute:"");
 
+    gobj_command(priv->gobj_connector, gbuf_cur_rd_pointer(gbuf), 0, gobj);
+    GBUF_DECREF(gbuf);
+    return 0;
+}
+
+/***************************************************************************
+ *
+ ***************************************************************************/
+PRIVATE int poll_command_data(hgobj gobj)
+{
+    PRIVATE_DATA *priv = gobj_priv_data(gobj);
+
+    GBUFFER *gbuf = gbuf_create(8*1024, 8*1024, 0, 0);
+    const char *command = gobj_read_str_attr(gobj, "command");
+
+    gbuf_printf(gbuf, "%s", command);
     gobj_command(priv->gobj_connector, gbuf_cur_rd_pointer(gbuf), 0, gobj);
     GBUF_DECREF(gbuf);
     return 0;
@@ -478,6 +495,7 @@ PRIVATE int ac_on_open(hgobj gobj, const char *event, json_t *kw, hgobj src)
     }
     gobj_write_pointer_attr(gobj, "gobj_connector", src);
 
+    const char *command = gobj_read_str_attr(gobj, "command");
     const char *attribute = gobj_read_str_attr(gobj, "attribute");
     const char *gobj_name_ = gobj_read_str_attr(gobj, "gobj_name");
     if(!empty_string(attribute)) {
@@ -491,6 +509,11 @@ PRIVATE int ac_on_open(hgobj gobj, const char *event, json_t *kw, hgobj src)
             }
             poll_attr_data(gobj);
         }
+    } else if(!empty_string(command)) {
+        if(!priv->verbose) {
+            set_timeout_periodic(priv->timer, priv->refresh_time * 1000);
+        }
+        poll_command_data(gobj);
     } else {
         // Por defecto stats.
         if(!priv->verbose) {
@@ -553,8 +576,10 @@ PRIVATE int ac_stats(hgobj gobj, const char *event, json_t *kw, hgobj src)
     } else {
         json_t *jn_data = WEBIX_DATA(kw); //kw_get_dict_value(kw, "data", 0, 0);
         if(!priv->verbose) {
+            time_t t;
+            time(&t);
             printf("\033c");
-            printf("Stats of '%s':", gobj_read_str_attr(gobj, "stats"));
+            printf("Time %llu\n", (unsigned long long)t);
             print_json(jn_data);
         }
     }
@@ -568,8 +593,11 @@ PRIVATE int ac_stats(hgobj gobj, const char *event, json_t *kw, hgobj src)
 PRIVATE int ac_timeout(hgobj gobj, const char *event, json_t *kw, hgobj src)
 {
     const char *attribute = gobj_read_str_attr(gobj, "attribute");
+    const char *command = gobj_read_str_attr(gobj, "command");
     if(!empty_string(attribute)) {
         poll_attr_data(gobj);
+    } else if(!empty_string(command)) {
+        poll_command_data(gobj);
     } else {
         poll_stats_data(gobj);
     }

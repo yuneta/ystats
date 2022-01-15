@@ -30,6 +30,7 @@ struct arguments
     char *url;
     char *stats;
     char *attribute;
+    char *command;
     char *auth_owner;
     char *realm_role;
     char *yuno_role;
@@ -148,6 +149,7 @@ static struct argp_option options[] = {
 {"refresh_time",    't',    "NUMBER",   0,      "Refresh time, in seconds (default 1).", 10},
 {"stats",           's',    "STATS",    0,      "Statistic to ask.", 10},
 {"attribute",       'a',    "ATTRIBUTE",0,      "Attribute to ask .", 10},
+{"command",         'c',    "COMMAND",  0,      "Command to execute .", 10},
 {"gobj_name",       'g',    "GOBJNAME", 0,      "Attribute's GObj (named-gobj or full-path).", 10},
 
 {0,                 0,      0,          0,      "OAuth2 keys", 20},
@@ -245,6 +247,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
     case 'a':
         arguments->attribute = arg;
         break;
+    case 'c':
+        arguments->command = arg;
+        break;
     case 'g':
         arguments->gobj_name = arg;
         break;
@@ -331,6 +336,7 @@ int main(int argc, char *argv[])
     arguments.stats = "";
     arguments.gobj_name = "";
     arguments.attribute = "";
+    arguments.command = "";
     arguments.realm_role = "";
     arguments.yuno_role = 0;
     arguments.yuno_name = 0;
@@ -378,13 +384,14 @@ int main(int argc, char *argv[])
         argvs[idx++] = param2;
     } else {
         json_t *kw_utility = json_pack(
-            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s}}",
+            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s}}",
             "global",
             "YStats.refresh_time", arguments.refresh_time,
             "YStats.verbose", arguments.verbose,
             "YStats.stats", arguments.stats,
             "YStats.gobj_name", arguments.gobj_name,
             "YStats.attribute", arguments.attribute,
+            "YStats.command", arguments.command,
             "YStats.realm_role", arguments.realm_role,
             "YStats.auth_system", arguments.auth_system,
             "YStats.auth_url", arguments.auth_url,
