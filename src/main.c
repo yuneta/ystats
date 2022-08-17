@@ -50,6 +50,7 @@ struct arguments
     int print_yuneta_version;
     int use_config_file;
     const char *config_json_file;
+    int print_with_metadata;
 };
 
 /***************************************************************************
@@ -174,6 +175,7 @@ static struct argp_option options[] = {
 {"verbose",         'l',    "LEVEL",    0,      "Verbose level.", 50},
 {"version",         'v',    0,          0,      "Print program version.", 50},
 {"yuneta-version",  'V',    0,          0,      "Print yuneta version", 50},
+{"with-metadata",   'm',    0,          0,      "Print with metadata", 50},
 {0}
 };
 
@@ -268,6 +270,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
         }
         break;
 
+    case 'm':
+        arguments->print_with_metadata = 1;
+        break;
     case 'r':
         arguments->print_role = 1;
         break;
@@ -352,7 +357,7 @@ int main(int argc, char *argv[])
      *  Save args
      */
     char argv0[512];
-    char *argvs[]= {argv0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    char *argvs[]= {argv0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     memset(argv0, 0, sizeof(argv0));
     strncpy(argv0, argv[0], sizeof(argv0)-1);
     int idx = 1;
@@ -384,7 +389,7 @@ int main(int argc, char *argv[])
         argvs[idx++] = param2;
     } else {
         json_t *kw_utility = json_pack(
-            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s}}",
+            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:b}}",
             "global",
             "YStats.refresh_time", arguments.refresh_time,
             "YStats.verbose", arguments.verbose,
@@ -400,7 +405,8 @@ int main(int argc, char *argv[])
             "YStats.user_passw", arguments.user_passw,
             "YStats.jwt", arguments.jwt,
             "YStats.url", arguments.url,
-            "YStats.yuno_service", arguments.yuno_service
+            "YStats.yuno_service", arguments.yuno_service,
+            "YStats.print_with_metadata", arguments.print_with_metadata
         );
         json_t *jn_ystats = kw_get_dict_value(kw_utility, "global", 0, 0);
         if(arguments.yuno_role) {

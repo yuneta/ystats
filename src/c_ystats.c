@@ -37,6 +37,7 @@ PRIVATE int poll_stats_data(hgobj gobj);
  *---------------------------------------------*/
 PRIVATE sdata_desc_t tattr_desc[] = {
 /*-ATTR-type------------name----------------flag--------default---------description---------- */
+SDATA (ASN_BOOLEAN,     "print_with_metadata",0,        0,              "Print response with metadata."),
 SDATA (ASN_BOOLEAN,     "verbose",          0,          1,              "Verbose mode."),
 SDATA (ASN_OCTET_STR,   "stats",            0,          "",             "Requested statistics."),
 SDATA (ASN_OCTET_STR,   "gobj_name",        0,          "",             "Gobj's attribute or command."),
@@ -574,13 +575,22 @@ PRIVATE int ac_stats(hgobj gobj, const char *event, json_t *kw, hgobj src)
         gobj_set_exit_code(-1);
         gobj_shutdown();
     } else {
+        BOOL to_free = FALSE;
         json_t *jn_data = WEBIX_DATA(kw); //kw_get_dict_value(kw, "data", 0, 0);
+        if(!gobj_read_bool_attr(gobj, "print_with_metadata")) {
+            jn_data = kw_filter_metadata(jn_data);
+            to_free = TRUE;
+        }
+
         if(!priv->verbose) {
             time_t t;
             time(&t);
             printf("\033c");
             printf("Time %llu\n", (unsigned long long)t);
             print_json(jn_data);
+        }
+        if(to_free) {
+            JSON_DECREF(jn_data);
         }
     }
     KW_DECREF(kw);
