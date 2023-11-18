@@ -31,7 +31,6 @@ struct arguments
     char *stats;
     char *attribute;
     char *command;
-    char *auth_owner;
     char *realm_role;
     char *yuno_role;
     char *yuno_name;
@@ -154,11 +153,10 @@ static struct argp_option options[] = {
 {"gobj_name",       'g',    "GOBJNAME", 0,      "Attribute's GObj (named-gobj or full-path).", 10},
 
 {0,                 0,      0,          0,      "OAuth2 keys", 20},
-{"auth_system",     'K',    "AUTH_SYSTEM",0,    "OAuth2 System (default: keycloak, get now a jwt)", 20},
-{"auth_url",        'k',    "AUTH_URL", 0,      "OAuth2 Server Url (get now a jwt)", 20},
-{"auth_owner",      'w',    "AUTH_OWNER",0,     "OAuth2 Owner (get now a jwt)", 20},
-{"user_id",         'x',    "USER_ID",  0,      "OAuth2 User Id (get now a jwt)", 20},
-{"user_passw",      'X',    "USER_PASSW",0,     "OAuth2 User Password (get now a jwt)", 20},
+{"auth_system",     'K',    "AUTH_SYSTEM",0,    "OpenID System(default: keycloak, to get now a jwt)", 20},
+{"auth_url",        'k',    "AUTH_URL", 0,      "OpenID Endpoint (to get now a jwt)", 20},
+{"user_id",         'x',    "USER_ID",  0,      "OAuth2 User Id (to get now a jwt)", 20},
+{"user_passw",      'X',    "USER_PASSW",0,     "OAuth2 User Password (to get now a jwt)", 20},
 {"jwt",             'j',    "JWT",      0,      "Jwt (previously got it)", 21},
 
 {0,                 0,      0,          0,      "Connection keys", 30},
@@ -204,9 +202,6 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
         break;
     case 'k':
         arguments->auth_url = arg;
-        break;
-    case 'w':
-        arguments->auth_owner = arg;
         break;
 
     case 'x':
@@ -348,7 +343,6 @@ int main(int argc, char *argv[])
     arguments.yuno_service = "__default_service__";
     arguments.auth_system = "keycloak";
     arguments.auth_url = "";
-    arguments.auth_owner = "";
     arguments.user_id = "";
     arguments.user_passw = "";
     arguments.jwt = "";
@@ -389,7 +383,7 @@ int main(int argc, char *argv[])
         argvs[idx++] = param2;
     } else {
         json_t *kw_utility = json_pack(
-            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:b}}",
+            "{s:{s:i, s:b, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:s, s:b}}",
             "global",
             "YStats.refresh_time", arguments.refresh_time,
             "YStats.verbose", arguments.verbose,
@@ -400,7 +394,6 @@ int main(int argc, char *argv[])
             "YStats.realm_role", arguments.realm_role,
             "YStats.auth_system", arguments.auth_system,
             "YStats.auth_url", arguments.auth_url,
-            "YStats.auth_owner", arguments.auth_owner,
             "YStats.user_id", arguments.user_id,
             "YStats.user_passw", arguments.user_passw,
             "YStats.jwt", arguments.jwt,
