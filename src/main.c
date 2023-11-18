@@ -31,7 +31,7 @@ struct arguments
     char *stats;
     char *attribute;
     char *command;
-    char *realm_role;
+    char *azp;
     char *yuno_role;
     char *yuno_name;
     char *yuno_service;
@@ -156,12 +156,12 @@ static struct argp_option options[] = {
 {"auth_system",     'K',    "AUTH_SYSTEM",0,    "OpenID System(default: keycloak, to get now a jwt)", 20},
 {"auth_url",        'k',    "AUTH_URL", 0,      "OpenID Endpoint (to get now a jwt)", 20},
 {"user_id",         'x',    "USER_ID",  0,      "OAuth2 User Id (to get now a jwt)", 20},
+{"azp",             'Z',    "AZP",      0,      "azp (Authorized Party, client_id in keycloak)", 20},
 {"user_passw",      'X',    "USER_PASSW",0,     "OAuth2 User Password (to get now a jwt)", 20},
 {"jwt",             'j',    "JWT",      0,      "Jwt (previously got it)", 21},
 
 {0,                 0,      0,          0,      "Connection keys", 30},
 {"url",             'u',    "URL",      0,      "Url to connect. Default: 'ws://127.0.0.1:1991'.", 30},
-{"realm_role",      'Z',    "REALM",    0,      "Realm role (used for Authorized Party, 'azp' field of jwt, client_id in keycloak)", 30},
 {"yuno_role",       'O',    "ROLE",     0,      "Remote yuno role. Default: ''", 30},
 {"yuno_name",       'o',    "NAME",     0,      "Remote yuno name. Default: ''", 30},
 {"yuno_service",    'S',    "SERVICE",  0,      "Remote yuno service. Default: '__default_service__'", 30},
@@ -232,7 +232,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
         break;
 
     case 'Z':
-        arguments->realm_role = arg;
+        arguments->azp = arg;
         break;
     case 'S':
         arguments->yuno_service = arg;
@@ -337,7 +337,7 @@ int main(int argc, char *argv[])
     arguments.gobj_name = "";
     arguments.attribute = "";
     arguments.command = "";
-    arguments.realm_role = "";
+    arguments.azp = "";
     arguments.yuno_role = 0;
     arguments.yuno_name = 0;
     arguments.yuno_service = "__default_service__";
@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
             "YStats.gobj_name", arguments.gobj_name,
             "YStats.attribute", arguments.attribute,
             "YStats.command", arguments.command,
-            "YStats.realm_role", arguments.realm_role,
+            "YStats.azp", arguments.azp,
             "YStats.auth_system", arguments.auth_system,
             "YStats.auth_url", arguments.auth_url,
             "YStats.user_id", arguments.user_id,
