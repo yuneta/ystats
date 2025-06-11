@@ -505,19 +505,19 @@ PRIVATE int ac_on_open(hgobj gobj, const char *event, json_t *kw, hgobj src)
             gobj_shutdown();
         } else {
             if(!priv->verbose) {
-                set_timeout_periodic(priv->timer, priv->refresh_time * 1000);
+                set_timeout(priv->timer, priv->refresh_time * 1000);
             }
             poll_attr_data(gobj);
         }
     } else if(!empty_string(command)) {
         if(!priv->verbose) {
-            set_timeout_periodic(priv->timer, priv->refresh_time * 1000);
+            set_timeout(priv->timer, priv->refresh_time * 1000);
         }
         poll_command_data(gobj);
     } else {
         // Por defecto stats.
         if(!priv->verbose) {
-            set_timeout_periodic(priv->timer, priv->refresh_time * 1000);
+            set_timeout(priv->timer, priv->refresh_time * 1000);
         }
         poll_stats_data(gobj);
 // Sistema de subscription. No lo voy a usar aquí.
@@ -592,6 +592,9 @@ PRIVATE int ac_stats(hgobj gobj, const char *event, json_t *kw, hgobj src)
             JSON_DECREF(jn_data);
         }
     }
+
+    set_timeout(priv->timer, priv->refresh_time * 1000);
+
     KW_DECREF(kw);
     return 0;
 }
